@@ -1,13 +1,13 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import TestFunc from "../TaskTest";
+import AddTaskScreen from "../AddTaskScreen";
 
-export default function Test() {
+export default function Task() {
     const Stack = createNativeStackNavigator();
   
     return (
       
         <Stack.Navigator>
-          <Stack.Screen name="Test" component={TestFunc} />
+          <Stack.Screen name="Add Task Screen" component={AddTaskScreen} />
           
         </Stack.Navigator>
      
