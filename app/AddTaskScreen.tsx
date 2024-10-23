@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, TextInput, View, Text, Picker, Platform } from 'react-native';
+import { Button, TextInput, View, Text, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -28,6 +28,7 @@ export default function AddTaskScreen({ navigation }: any) {
       const storedTasks = await AsyncStorage.getItem('tasklist');
       const currentTasks = storedTasks ? JSON.parse(storedTasks) : [];
       const updatedTasks = [...currentTasks, newTask];
+      console.log(updatedTasks)
       await AsyncStorage.setItem('tasklist', JSON.stringify(updatedTasks));
       navigation.navigate('StartScreen');
     } catch (error) {
@@ -58,7 +59,7 @@ export default function AddTaskScreen({ navigation }: any) {
         onChangeText={setDescription}
         style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
       />
-      <Picker
+     {/*  <Picker
         selectedValue={status}
         onValueChange={(itemValue) => setStatus(itemValue)}
         style={{ marginBottom: 10 }}
@@ -66,7 +67,7 @@ export default function AddTaskScreen({ navigation }: any) {
         <Picker.Item label="To Do" value="To Do" />
         <Picker.Item label="In Progress" value="In Progress" />
         <Picker.Item label="Completed" value="Completed" />
-      </Picker>
+      </Picker> */}
       <TextInput
         placeholder="Category"
         value={category}
