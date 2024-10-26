@@ -28,7 +28,7 @@ export default function ProfileScreen({ navigation }: any) {
       if (storedUserData) {
         setUserData(JSON.parse(storedUserData));
       } else {
-        setUserData(null); // If no user data, set it to null
+        setUserData(null); 
       }
     } catch (error) {
       console.error('Failed to load user data', error);

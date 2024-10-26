@@ -54,11 +54,11 @@ useEffect(() => {
       const storedTasks = await AsyncStorage.getItem("tasklist");
       const taskData = storedTasks ? JSON.parse(storedTasks) : [];
   
-      console.log("Loaded tasks from AsyncStorage:", taskData);
+    
   
       // Set the tasks
       setTasks(taskData);
-      setAllTaskData(taskData); // This will trigger the useEffect for allTaskData
+      setAllTaskData(taskData); 
     } catch (error) {
       console.error("Failed to load tasks", error);
     }
@@ -76,19 +76,13 @@ useEffect(() => {
 
   // Filter tasks based on selected status and category
   const showList = () => {
-    console.log("Filtering tasks...");
-    console.log("Current allTaskData:", allTaskData);
-    console.log("Selected Category:", selectedCategory);
-    console.log("List Type:", listType);
+    
   
     if (allTaskData.length === 0) {
       console.log("No tasks to filter.");
       return; // Do not proceed if there are no tasks
     }
-    console.log("Selected Category:", selectedCategory);
-  console.log("All Task Data:", allTaskData);
-
-
+    
     const filtered = allTaskData.filter((task) => {
       const matchesStatus = task.status === listType;
       const matchesCategory = selectedCategory === "All Categories" || task.category === selectedCategory;
