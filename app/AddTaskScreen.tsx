@@ -1,36 +1,70 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, TextInput, View, Text, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import { TaskItem } from '@/models/TaskItem';
+import { Picker } from '@react-native-picker/picker';
+import { CategoryItem } from '@/models/CategoryItem';
+import { useIsFocused } from "@react-navigation/native";
 export default function AddTaskScreen({ navigation }: any) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('To Do');
+  const [status, setStatus] = useState<'To Do' | 'In Progress' | 'Done'>('To Do');
   const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [endTime, setEndTime] = useState(new Date());
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    loadCategories(); // Load categories when the component mounts
+  }, []);
+
+  useEffect(() => {
+    if (isFocused) {
+      loadCategories();
+     
+    }
+  }, [isFocused]);
+
+  const loadCategories = async () => {
+    try {
+      const storedCategories = await AsyncStorage.getItem('categorylist');
+      if (storedCategories) {
+        setCategories(JSON.parse(storedCategories));
+      }
+    } catch (error) {
+      console.error('Failed to load categories', error);
+    }
+  };
+
+
 
   // Function to handle saving the task
   const handleSaveTask = async () => {
-    const newTask = {
-      id: Date.now().toString(),
+    // Use TaskItem model to create a new task
+    const newTask = new TaskItem(
+      Date.now().toString(),
       title,
       description,
       status,
       category,
       date,
       endTime
-    };
+    );
 
     try {
       const storedTasks = await AsyncStorage.getItem('tasklist');
       const currentTasks = storedTasks ? JSON.parse(storedTasks) : [];
       const updatedTasks = [...currentTasks, newTask];
-      console.log(updatedTasks)
+      console.log(updatedTasks);
       await AsyncStorage.setItem('tasklist', JSON.stringify(updatedTasks));
-      navigation.navigate('StartScreen');
+     setTitle('');
+     setDescription('');
+
+      navigation.navigate('index');
+      
     } catch (error) {
       console.error('Failed to save task', error);
     }
@@ -59,21 +93,12 @@ export default function AddTaskScreen({ navigation }: any) {
         onChangeText={setDescription}
         style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
       />
-     {/*  <Picker
-        selectedValue={status}
-        onValueChange={(itemValue) => setStatus(itemValue)}
-        style={{ marginBottom: 10 }}
-      >
-        <Picker.Item label="To Do" value="To Do" />
-        <Picker.Item label="In Progress" value="In Progress" />
-        <Picker.Item label="Completed" value="Completed" />
-      </Picker> */}
-      <TextInput
-        placeholder="Category"
-        value={category}
-        onChangeText={setCategory}
-        style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
-      />
+     
+
+      <View style={{height:50}}></View>
+   
+   
+
       <View>
         <Text>Pick a date</Text>
         <Button onPress={showDatepicker} title="Select Date" />
@@ -92,9 +117,25 @@ export default function AddTaskScreen({ navigation }: any) {
         onFocus={() => showDatepicker()}
         style={{ borderWidth: 1, padding: 8, marginTop: 10 }}
       />
-      <Button title="Save Task" onPress={handleSaveTask} />
+     
+      <View >
+
+{/* Category Picker */}
+<Text>Select Category</Text>
+<Picker
+selectedValue={category}
+onValueChange={(itemValue) => setCategory(itemValue)}
+style={{ height: 0, width: '100%', marginBottom: 10 }}
+>
+<Picker.Item label="Select a Category" value="" />
+{categories.map((cat) => (
+<Picker.Item key={cat.id} label={cat.name} value={cat.name} />
+))}
+</Picker>
+</View>
+
+<Button title="Save Task" onPress={handleSaveTask} />
     </View>
+    
   );
 }
-
-
