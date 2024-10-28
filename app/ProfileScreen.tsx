@@ -4,14 +4,30 @@ import { CategoryItem } from "@/models/CategoryItem";
 import { TaskItem } from "@/models/TaskItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Button, FlatList, Text, View, StyleSheet } from "react-native";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
+import { Alert, Button, FlatList, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
 export default function ProfileScreen({ navigation }: any) {
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const isFocused = useIsFocused();
   const [showDelete, setShowDelete] = useState(false);
   const [userData, setUserData] = useState<{ username: string, password: string } | null>(null);
+  
+  // Set up the logout button in the header
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={handleLogout} style={styles.headerButton}>
+          <Ionicons name="log-out-outline" size={24} color="black" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
+  
   // Load categories when the screen is focused
    useEffect(() => {
     if (isFocused) {
@@ -38,8 +54,9 @@ export default function ProfileScreen({ navigation }: any) {
 
   // Handle logout without clearing user data
   const handleLogout = async () => {
+    await AsyncStorage.setItem('isLoggedIn', 'false');
     Alert.alert('Logout', 'You have been logged out.');
-    navigation.navigate('Login'); // Redirect to LoginScreen but retain user data in AsyncStorage
+    router.replace('/LogInScreen'); // Redirect to LoginScreen but retain user data in AsyncStorage
   };
 
   // Handle deleting the user data from AsyncStorage
@@ -50,7 +67,7 @@ export default function ProfileScreen({ navigation }: any) {
       Alert.alert('Account Deleted', 'Your account has been deleted.');
       
       // After deleting, navigate to the SignUp screen to create a new user
-      navigation.navigate('SignUp');
+      router.navigate('/SignUpScreen');
     } catch (error) {
       console.error('Error deleting account:', error);
     }
@@ -142,7 +159,7 @@ async function deleteAllCategories(){
       )}
 
      {/* Logout button */}
-     <Button title="Logout" onPress={handleLogout} />
+   {/*   <Button title="Logout" onPress={handleLogout} /> */}
 
 {/* Delete User button */}
 <Button title="Delete Account" color="red" onPress={handleDeleteUser} />
@@ -163,6 +180,9 @@ async function deleteAllCategories(){
       fontSize: 24,
       marginBottom: 20,
       textAlign: 'center',
+    },
+    headerButton: {
+      marginRight: 15, 
     },
     userInfo: {
       marginVertical: 20,

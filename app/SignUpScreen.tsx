@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { router } from 'expo-router'; 
 
 export default function SignUpScreen({ navigation }: any) {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [isLogged, setIsLogged] = useState(false);
   /* const navigation = useNavigation(); */ // Get the navigation object
 
   const handleSignUp = async () => {
@@ -13,8 +15,9 @@ export default function SignUpScreen({ navigation }: any) {
       try {
         // Save username and password to AsyncStorage
         await AsyncStorage.setItem('userData', JSON.stringify({ username, password }));
+        await AsyncStorage.setItem('isLoggedIn', 'true');
         Alert.alert('Sign Up Successful', 'You can now log in.');
-        navigation.navigate('Login'); // Navigate back to login page
+        router.navigate('/LogInScreen'); // Navigate back to login page
       } catch (error) {
         console.error('Error saving data:', error);
       }

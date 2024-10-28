@@ -180,9 +180,11 @@ useEffect(() => {
 
       {/* Modal for updating task status */}
       {selectedTask && (
-        <Modal visible={isModalVisible} animationType="slide" transparent>
+        <Modal visible={isModalVisible} animationType="slide" >
           <View style={styles.modalContainer}>
             <Text>Change Status for {selectedTask.title}</Text>
+            
+            
             <Picker
               selectedValue={selectedTask.status}
               onValueChange={(newStatus) => switchStatus(selectedTask.id, newStatus)}
@@ -192,8 +194,14 @@ useEffect(() => {
               <Picker.Item label="In Progress" value="In Progress" />
               <Picker.Item label="Done" value="Done" />
             </Picker>
-            <Button title="Close" onPress={closeModal} />
+
+            
+           <View>
+           <Button title="Close" onPress={closeModal} />
+
+           </View>
           </View>
+          
         </Modal>
       )}
     </View>

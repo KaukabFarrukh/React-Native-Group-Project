@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
+
 import { TaskItem } from "@/models/TaskItem";
 
 interface TaskItemComponentProps {
