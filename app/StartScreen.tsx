@@ -8,6 +8,8 @@ import { Picker } from "@react-native-picker/picker";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { Button, FlatList, Text, StyleSheet, TouchableOpacity, View, Modal, Pressable } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 export default function StartScreen({ navigation }: any) {
   const [categories, setCategories] = useState<CategoryItem[]>([]);
@@ -119,17 +121,26 @@ useEffect(() => {
   
     {/* Categories List with "All Categories" */}
     <View>
+    
       <FlatList
         data={[{ id: "all", name: "All Categories" }, ...categories]}
         keyExtractor={(item) => item.id}
         horizontal
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => setSelectedCategory(item.name === "All Categories" ? "All Categories" : item.name)}>
-            <Text style={[styles.categoryItem, selectedCategory === item.name && styles.selectedCategory]}>
+          {selectedCategory === item.name ? (
+           
+              <Text style={[styles.selectedCategory, styles.selectedText]}>
+                {item.name}
+              </Text>
+
+          ) : (
+            <Text style={styles.categoryItem}>
               {item.name}
             </Text>
-          </TouchableOpacity>
-          
+          )}
+        </TouchableOpacity>
+        
         )}
         contentContainerStyle={styles.flatListContent}
       />
@@ -170,10 +181,11 @@ useEffect(() => {
     />
   
     <Button title="Create Task" onPress={() => navigation.navigate("AddTaskScreen")} />
-    <Button title="Delete all" onPress={() => setShowDelete(true)} />
+    <Button color='red' title="Delete all" onPress={() => setShowDelete(true)} />
   
     {showDelete && (
       <DeleteAllTasks
+      
         message="Are you sure you want to delete all?"
         button1Click={() => setShowDelete(false)}
         button1Text="Cancel"
@@ -214,6 +226,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#0D0D0D',
     flex: 1,
   },
+  gradientBackground: {
+   
+   
+    borderRadius: 10,
+  },
   flatListContent: {
     paddingTop: 50,     // Adds padding only at the top of the FlatList content
     paddingBottom: 20,  // Adds padding only at the bottom of the FlatList content
@@ -230,7 +247,7 @@ const styles = StyleSheet.create({
      color:'white'
   },
   taskFilterTab: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+   /*  backgroundColor: 'rgba(255, 255, 255, 0.2)', */
     padding: 30,
     flex: 1,
     justifyContent: "center",
@@ -241,22 +258,26 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   shopFilterTabActive: {
-    backgroundColor: "#DB5400",
+  /*   backgroundColor: "#DB5400", */
     padding: 30,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 0,
-    color:'white',
+   borderBottomWidth:1,
+   borderColor:'white',
     borderRadius: 8,
     borderWidth: 1,
+    
   },
   categoryItem: {
     color:'white',
     fontWeight:'bold',
-    padding: 20,
+    fontSize:20,
+    padding: 30,
     margin: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)', // Semi-transparent for glass effect
+   /*  backgroundColor: 'rgba(255, 255, 255, 0.2)', */  // Semi-transparent for glass effect
+  /*   backgroundColor: 'transparent', */ // Semi-transparent for glass effect
     borderRadius: 8,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
@@ -268,10 +289,25 @@ const styles = StyleSheet.create({
     overflow: 'hidden', 
   },
   selectedCategory: {
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+   /*  backgroundColor: "#DB5400", */
+   borderColor:'white',
+    fontWeight:'bold',
+    fontSize:20,
+    padding: 30,
+    margin: 4,
+   
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
+    /* borderColor: 'rgba(255, 255, 255, 0.3)', */
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5, // Adds shadow depth on Android
+    overflow: 'hidden', 
+  },
+  selectedText: {
+    color: 'white', // Change text color for selected category if needed
   },
   taskList: {
     paddingBottom: 20, // Adds spacing at the bottom of the task list

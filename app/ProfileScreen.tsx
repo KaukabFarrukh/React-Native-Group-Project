@@ -7,6 +7,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { Alert, Button, FlatList, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
@@ -122,6 +123,14 @@ async function deleteAllCategories(){
 
     return (
       <View style= {styles.container}>
+        {userData && (
+        <View style={styles.userInfo}>
+          <Text style={styles.userLabel}>Hi {userData.username} !</Text>
+          {/* <Text style={styles.userText}>{userData.username}</Text>
+          <Text style={styles.userLabel}>Password:</Text>
+          <Text style={styles.userText}>{userData.password}</Text> */}
+        </View>
+      )}
         <View style= {styles.addCategoryContainer}>
           <AddCategory onAddCategory={handleAddCategory}></AddCategory>
            
@@ -129,7 +138,7 @@ async function deleteAllCategories(){
         <FlatList
           data={categories}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <Text styles= {styles.categoryText}>{item.name}</Text>}
+          renderItem={({ item }) => <Text style= {styles.categoryText}>{item.name}</Text>}
         />
           </View>
 
@@ -146,14 +155,7 @@ async function deleteAllCategories(){
  />
  }
 
-{userData && (
-        <View style={styles.userInfo}>
-          <Text style={styles.userLabel}>Username:</Text>
-          <Text style={styles.userText}>{userData.username}</Text>
-          <Text style={styles.userLabel}>Password:</Text>
-          <Text style={styles.userText}>{userData.password}</Text>
-        </View>
-      )}
+
 
      {/* Logout button */}
    {/*   <Button title="Logout" onPress={handleLogout} /> */}
@@ -175,6 +177,7 @@ async function deleteAllCategories(){
 
     addCategoryContainer: {
       marginBottom: 20,
+     /*  backgroundColor:'white' */
     },
 
     headerButton: {
@@ -190,13 +193,14 @@ async function deleteAllCategories(){
     userInfo: {
       marginVertical: 20,
       padding: 10,
-      backgroundColor: '#1C1C1C',
+     /*  backgroundColor: '#1C1C1C', */
       borderRadius: 5,
     },
 
     userLabel: {
       color: '#FFFFFF',
       fontWeight: 'bold',
+      fontSize:34
     },
 
     userText: {

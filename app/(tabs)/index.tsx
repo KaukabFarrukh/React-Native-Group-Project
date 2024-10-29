@@ -14,24 +14,33 @@ import SignUpScreen from '../SignUpScreen';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TabLayout from './_layout';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomeScreen() {
   const Stack = createNativeStackNavigator();
 
   return (
     
-    <Stack.Navigator screenOptions={{
-      contentStyle: { backgroundColor: '#f0f0f0' }, // Background color for all screens
-      headerStyle: { backgroundColor: '#0D0D0D' },   // Header background color
-      headerTintColor: '#FFFFFF',   
-      headerTitleStyle: { color: '#FFFFFF' },                  // Header text and icon color
-    }} >
-        
-        <Stack.Screen name="StartScreen" component={StartScreen}
-        
-        />
-      
-      </Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        contentStyle: { backgroundColor: '#f0f0f0' },
+        headerTintColor: '#FFFFFF',
+        headerTitleStyle: { color: '#FFFFFF' },
+        headerBackground: () => (
+          <LinearGradient
+          colors={['rgba(219, 84, 0, 0.7)', 'rgba(219, 84, 0, 0.2)', 'rgba(13, 13, 13, 0.1)', '#0D0D0D']}
+          start={{ x: 0, y: 0.1 }}  // Starts from the top-left corner
+          end={{ x: 0.2, y: 1.5 }} 
+            style={{ flex: 1,  }}
+          />
+        ),
+      }}
+    >
+      <Stack.Screen
+        name="StartScreen"
+        component={StartScreen}
+      />
+    </Stack.Navigator>
    
   );
 }
