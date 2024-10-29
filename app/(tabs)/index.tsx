@@ -6,7 +6,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import HomeScreenStyles from '@/styles/HomeScreenStyles';
 import StartScreen from '../StartScreen';
 import AddTaskScreen from '../AddTaskScreen';
 import ProfileScreen from '../ProfileScreen';
@@ -15,13 +14,33 @@ import SignUpScreen from '../SignUpScreen';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TabLayout from './_layout';
+import HomeScreenStyles from './HomeScreenStyles';
 
 export default function HomeScreen() {
   const Stack = createNativeStackNavigator();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const storedUserData = await AsyncStorage.getItem('userData');
+      setIsLoggedIn(!!storedUserData);
+    };
+
+    checkLoginStatus();
+  }, []) ;
+
+  if (isLoggedIn === null) {
 
   return (
-    
-    <Stack.Navigator >
+
+    <View style={HomeScreenStyles.container}>
+        <Text style={HomeScreenStyles.loadingText}>Loading...</Text>
+      </View>
+     );
+    }
+
+    return (
+      <Stack.Navigator initialRouteName={isLoggedIn ? 'StartScreen' : 'Login'}>
         
         <Stack.Screen name="StartScreen" component={StartScreen} />
       
