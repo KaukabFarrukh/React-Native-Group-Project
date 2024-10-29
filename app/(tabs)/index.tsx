@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+import HomeScreenStyles from '@/styles/HomeScreenStyles';
 import StartScreen from '../StartScreen';
 import AddTaskScreen from '../AddTaskScreen';
 import ProfileScreen from '../ProfileScreen';
