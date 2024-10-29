@@ -79,29 +79,49 @@ export default function AddTaskScreen({ navigation }: any) {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text>Write your task</Text>
+    <View style={{ flex: 1, padding: 20, backgroundColor: '#0D0D0D'}}>
+      <Text style={{ fontSize: 24, color: 'white', textAlign: 'center', marginBottom: 20 }} >
+        Write your task
+      </Text>
+
       <TextInput
         placeholder="Title"
+        placeholderTextColor="lightgray"
         value={title}
         onChangeText={setTitle}
-        style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
+        style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          color: 'white',
+          padding: 10, 
+          marginBottom: 10,
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: 'rgba(255, 255, 255, 0.3)',
+        }}
       />
+
       <TextInput
         placeholder="Description"
+        placeholderTextColor="lightgray"
         value={description}
         onChangeText={setDescription}
-        style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
+        style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          color: 'white',
+          padding: 10, 
+          marginBottom: 10,
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: 'rgba(255, 255, 255, 0.3)',
+        }}
       />
      
+      <View style={{ marginBottom: 15}}>
+         <Text style= {{ color: 'white', marginBottom: 5 }}>
+          Pick a date
+         </Text>
 
-      <View style={{height:50}}></View>
-   
-   
-
-      <View>
-        <Text>Pick a date</Text>
-        <Button onPress={showDatepicker} title="Select Date" />
+        <Button onPress={showDatepicker} title="Select Date" color="#FF6347"/>
         {showDatePicker && (
           <DateTimePicker
             value={date}
@@ -111,22 +131,40 @@ export default function AddTaskScreen({ navigation }: any) {
           />
         )}
       </View>
+
       <TextInput
         placeholder="End Time (e.g., 08:00 AM)"
+        placeholderTextColor="lightgray"
         value={endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         onFocus={() => showDatepicker()}
-        style={{ borderWidth: 1, padding: 8, marginTop: 10 }}
+        style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          color: 'white',
+          padding: 10,
+          marginTop: 10,
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: 'rgba(255, 255, 255, 0.3)',
+         }}
       />
-     
-      <View >
+
+      <View  style={{ marginBottom: 15 }}>
 
 {/* Category Picker */}
-<Text>Select Category</Text>
+<Text style={{ color: 'white', marginBottom: 5 }}>
+  Select Category
+</Text>
+
 <Picker
 selectedValue={category}
 onValueChange={(itemValue) => setCategory(itemValue)}
-style={{ height: 0, width: '100%', marginBottom: 10 }}
+style={{ 
+  color: 'white',
+  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  borderRadius: 8,
+  }}
 >
+
 <Picker.Item label="Select a Category" value="" />
 {categories.map((cat) => (
 <Picker.Item key={cat.id} label={cat.name} value={cat.name} />
@@ -134,7 +172,7 @@ style={{ height: 0, width: '100%', marginBottom: 10 }}
 </Picker>
 </View>
 
-<Button title="Save Task" onPress={handleSaveTask} />
+<Button title="Save Task" onPress={handleSaveTask} color="#FF6347" />
     </View>
     
   );
