@@ -4,6 +4,9 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import StartScreen from '../StartScreen';
+import AddTaskScreen from '../AddTaskScreen';
+import ProfileScreen from '../ProfileScreen';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -16,6 +19,7 @@ export default function TabLayout() {
       }}>
       <Tabs.Screen
         name="index"
+        
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
