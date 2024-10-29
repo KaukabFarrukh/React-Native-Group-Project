@@ -4,13 +4,13 @@
     "slug": "PIA13SlutProjectReactNative",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/taskmaster.gif",
+    "icon": "./assets/images/TaskMaster2.gif",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/taskmaster.gif",
+      "image": "./assets/images/TaskMaster2.gif",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0D0D0D"
     },
     "ios": {
       "supportsTablet": true
@@ -18,7 +18,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor":"#0D0D0D"
       }
     },
     "web": {

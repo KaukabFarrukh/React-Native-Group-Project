@@ -4,7 +4,7 @@ import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
-
+import MyTheme from '@/assets/styles/theme';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
@@ -20,6 +20,21 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+
+  // Hide the splash screen with a delay after fonts and login status are loaded
+  useEffect(() => {
+    if (appInitialized && loaded) {
+      const hideSplash = async () => {
+        // Delay the hiding of the splash screen
+        await new Promise(resolve => setTimeout(resolve, 3500)); // Adjust the delay as needed
+        await SplashScreen.hideAsync();
+      };
+      hideSplash();
+    }
+  }, [appInitialized, loaded]);
+
+
+
 
   useEffect(() => {
     checkLoginStatus();
@@ -64,7 +79,7 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={MyTheme}>
       <Stack>
         <Stack.Screen name="LogInScreen" />
         <Stack.Screen name="SignUpScreen" />

@@ -7,6 +7,8 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import StartScreen from '../StartScreen';
 import AddTaskScreen from '../AddTaskScreen';
 import ProfileScreen from '../ProfileScreen';
+import MyTheme from '@/assets/styles/theme';
+import { View } from 'react-native';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -14,8 +16,11 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: MyTheme.colors.primary,  // Use custom theme color for active tab
+        tabBarInactiveTintColor: MyTheme.colors.border, // Use custom theme color for inactive tab
+        /* tabBarBackground: () => <View style={{ backgroundColor: MyTheme.colors.card, flex: 1 }} />, */
         headerShown: false,
+        
       }}>
       <Tabs.Screen
         name="index"

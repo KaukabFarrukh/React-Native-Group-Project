@@ -14,35 +14,22 @@ import SignUpScreen from '../SignUpScreen';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TabLayout from './_layout';
-import HomeScreenStyles from './HomeScreenStyles';
 
 export default function HomeScreen() {
   const Stack = createNativeStackNavigator();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const storedUserData = await AsyncStorage.getItem('userData');
-      setIsLoggedIn(!!storedUserData);
-    };
-
-    checkLoginStatus();
-  }, []) ;
-
-  if (isLoggedIn === null) {
 
   return (
-
-    <View style={HomeScreenStyles.container}>
-        <Text style={HomeScreenStyles.loadingText}>Loading...</Text>
-      </View>
-     );
-    }
-
-    return (
-      <Stack.Navigator initialRouteName={isLoggedIn ? 'StartScreen' : 'Login'}>
+    
+    <Stack.Navigator screenOptions={{
+      contentStyle: { backgroundColor: '#f0f0f0' }, // Background color for all screens
+      headerStyle: { backgroundColor: '#0D0D0D' },   // Header background color
+      headerTintColor: '#FFFFFF',   
+      headerTitleStyle: { color: '#FFFFFF' },                  // Header text and icon color
+    }} >
         
-        <Stack.Screen name="StartScreen" component={StartScreen} />
+        <Stack.Screen name="StartScreen" component={StartScreen}
+        
+        />
       
       </Stack.Navigator>
    
@@ -50,6 +37,9 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  navigatorStyle:{
+    color:'white'
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -59,6 +49,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    color:'white'
   },
   stepContainer: {
     gap: 8,

@@ -115,10 +115,10 @@ useEffect(() => {
   };
 
   return (
+    <View style={styles.container}>
+  
+    {/* Categories List with "All Categories" */}
     <View>
-      <Text>StartScreen</Text>
-      
-      {/* Categories List with "All Categories" */}
       <FlatList
         data={[{ id: "all", name: "All Categories" }, ...categories]}
         keyExtractor={(item) => item.id}
@@ -129,99 +129,152 @@ useEffect(() => {
               {item.name}
             </Text>
           </TouchableOpacity>
+          
         )}
+        contentContainerStyle={styles.flatListContent}
       />
-
+  
       {/* Status Filters */}
-      <View style={{ flexDirection: "row" }}>
+      <View style={styles.statusFilters}>
         <TouchableOpacity
           style={listType === "To Do" ? styles.shopFilterTabActive : styles.taskFilterTab}
           onPress={() => setListType("To Do")}
         >
-          <Text>To Do</Text>
+          <Text style={styles.statusText}>To Do</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={listType === "In Progress" ? styles.shopFilterTabActive : styles.taskFilterTab}
           onPress={() => setListType("In Progress")}
         >
-          <Text>In Progress</Text>
+          <Text style={styles.statusText}>In Progress</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={listType === "Done" ? styles.shopFilterTabActive : styles.taskFilterTab}
           onPress={() => setListType("Done")}
         >
-          <Text>Done</Text>
+          <Text style={styles.statusText}>Done</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Filtered Tasks List */}
-      <FlatList
-        data={filteredTasks}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Pressable onPress={() => openModal(item)}>
-            <TaskItemComponent item={item} />
-          </Pressable>
-        )}
-      />
-      
-      <Button title="Create Task" onPress={() => navigation.navigate("AddTaskScreen")} />
-      <Button title="Delete all" onPress={() => setShowDelete(true)} />
-
-      {showDelete && (
-        <DeleteAllTasks
-          message="Are you sure you want to delete all?"
-          button1Click={() => setShowDelete(false)}
-          button1Text="Cancel"
-          button2Click={deleteAll}
-          button2text="Confirm"
-        />
-      )}
-
-      {/* Modal for updating task status */}
-      {selectedTask && (
-        <Modal visible={isModalVisible} animationType="slide" >
-          <View style={styles.modalContainer}>
-            <Text>Change Status for {selectedTask.title}</Text>
-            
-            
-            <Picker
-              selectedValue={selectedTask.status}
-              onValueChange={(newStatus) => switchStatus(selectedTask.id, newStatus)}
-              style={{ height: 50, width: '100%', marginBottom: 10 }}
-            >
-              <Picker.Item label="To Do" value="To Do" />
-              <Picker.Item label="In Progress" value="In Progress" />
-              <Picker.Item label="Done" value="Done" />
-            </Picker>
-
-            
-           <View>
-           <Button title="Close" onPress={closeModal} />
-
-           </View>
-          </View>
-          
-        </Modal>
-      )}
     </View>
+  
+    {/* Filtered Tasks List */}
+    <FlatList
+      data={filteredTasks}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <Pressable onPress={() => openModal(item)}>
+          <TaskItemComponent item={item} />
+        </Pressable>
+      )}
+      contentContainerStyle={styles.taskList} // Optional: add padding to separate task list from buttons
+    />
+  
+    <Button title="Create Task" onPress={() => navigation.navigate("AddTaskScreen")} />
+    <Button title="Delete all" onPress={() => setShowDelete(true)} />
+  
+    {showDelete && (
+      <DeleteAllTasks
+        message="Are you sure you want to delete all?"
+        button1Click={() => setShowDelete(false)}
+        button1Text="Cancel"
+        button2Click={deleteAll}
+        button2text="Confirm"
+      />
+    )}
+  
+    {/* Modal for updating task status */}
+    {selectedTask && (
+      <Modal visible={isModalVisible} animationType="slide">
+        <View style={styles.modalContainer}>
+          <Text>Change Status for {selectedTask.title}</Text>
+          
+          <Picker
+            selectedValue={selectedTask.status}
+            onValueChange={(newStatus) => switchStatus(selectedTask.id, newStatus)}
+            style={{ height: 50, width: '100%', marginBottom: 10 }}
+          >
+            <Picker.Item label="To Do" value="To Do" />
+            <Picker.Item label="In Progress" value="In Progress" />
+            <Picker.Item label="Done" value="Done" />
+          </Picker>
+  
+          <View>
+            <Button title="Close" onPress={closeModal} />
+          </View>
+        </View>
+      </Modal>
+    )}
+  </View>
+  
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#0D0D0D',
+    flex: 1,
+  },
+  flatListContent: {
+    paddingTop: 50,     // Adds padding only at the top of the FlatList content
+    paddingBottom: 20,  // Adds padding only at the bottom of the FlatList content
+    marginTop: 5,       // Adds margin only at the top of the FlatList content
+    marginBottom: 0,   // Adds margin only at the bottom of the FlatList content
+  },
+  statusFilters: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 8,
+    color:'white'
+  },
+  statusText:{
+     color:'white'
+  },
   taskFilterTab: {
-    backgroundColor: "red",
-    height: 50,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 30,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    marginHorizontal: 0,
+    color:'white',
+    borderRadius: 8,
+    borderWidth: 1,
   },
   shopFilterTabActive: {
-    backgroundColor: "green",
-    height: 50,
+    backgroundColor: "#DB5400",
+    padding: 30,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    marginHorizontal: 0,
+    color:'white',
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  categoryItem: {
+    color:'white',
+    fontWeight:'bold',
+    padding: 20,
+    margin: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)', // Semi-transparent for glass effect
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5, // Adds shadow depth on Android
+    overflow: 'hidden', 
+  },
+  selectedCategory: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
+  },
+  taskList: {
+    paddingBottom: 20, // Adds spacing at the bottom of the task list
   },
   modalContainer: {
     flex: 1,
@@ -229,14 +282,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",
     padding: 20,
-  },
-  categoryItem: {
-    padding: 8,
-    margin: 4,
-    backgroundColor: "#ddd",
-    borderRadius: 8,
-  },
-  selectedCategory: {
-    backgroundColor: "#ffa",
   },
 });

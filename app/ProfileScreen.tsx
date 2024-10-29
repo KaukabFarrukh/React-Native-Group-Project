@@ -21,7 +21,7 @@ export default function ProfileScreen({ navigation }: any) {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={handleLogout} style={styles.headerButton}>
-          <Ionicons name="log-out-outline" size={24} color="black" />
+          <Ionicons name="log-out-outline" size={24} color="white" />
         </TouchableOpacity>
       ),
     });
@@ -122,7 +122,7 @@ async function deleteAllCategories(){
 
     return (
       <View>
-        <Text>ProfileScreen</Text>
+      
 
         <View>
           

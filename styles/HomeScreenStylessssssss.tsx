@@ -6,7 +6,8 @@ const HomeScreenStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f4f8', // Light background
+   /*  backgroundColor: '#f0f4f8', */ // Light background
+    backgroundColor: '#0D0D0D', // Light background
   },
   loadingText: {
     fontSize: 18,
@@ -15,7 +16,7 @@ const HomeScreenStyles = StyleSheet.create({
   // Common container style
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // White background for screens
+    backgroundColor: '#0D0D0D', // White background for screens
     padding: 16,
   },
   // Style for the header or title container
