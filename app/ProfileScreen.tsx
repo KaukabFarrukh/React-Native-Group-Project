@@ -121,25 +121,22 @@ async function deleteAllCategories(){
 }
 
     return (
-      <View>
-      
-
-        <View>
-          
+      <View style= {styles.container}>
+        <View style= {styles.addCategoryContainer}>
           <AddCategory onAddCategory={handleAddCategory}></AddCategory>
            
            {/* Display the list of categories */}
         <FlatList
           data={categories}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <Text>{item.name}</Text>}
+          renderItem={({ item }) => <Text styles= {styles.categoryText}>{item.name}</Text>}
         />
           </View>
 
-          <Button title="Delete All Categories" onPress={() => {setShowDelete(true)}}></Button>
+          <Button title="Delete All Categories" onPress={() => {setShowDelete(true)}} color="#FF6347"></Button>
 
           {showDelete  && 
- <DeleteAllTasks message={'Are you shure you want to delete all categories?'}
+ <DeleteAllTasks message={'Are you sure you want to delete all categories?'}
  button1Click={() => {
    setShowDelete(false)
  }}
@@ -163,9 +160,7 @@ async function deleteAllCategories(){
 
 {/* Delete User button */}
 <Button title="Delete Account" color="red" onPress={handleDeleteUser} />
-     
-     
-      </View>
+</View>
     );
   }
   
@@ -173,27 +168,39 @@ async function deleteAllCategories(){
 
   const styles = StyleSheet.create({
     container: {
-      padding: 20,
       flex: 1,
+      backgroundColor: '#0D0D0D',
+      padding: 20,
     },
-    title: {
-      fontSize: 24,
+
+    addCategoryContainer: {
       marginBottom: 20,
-      textAlign: 'center',
     },
+
     headerButton: {
-      marginRight: 15, 
+      marginRight: 15,
     },
+
+    categoryText: {
+      color: 'white',
+      fontSize: 16,
+      paddingVertical: 5,
+    },
+
     userInfo: {
       marginVertical: 20,
       padding: 10,
-      backgroundColor: '#f0f0f0',
+      backgroundColor: '#1C1C1C',
       borderRadius: 5,
     },
+
     userLabel: {
+      color: '#FFFFFF',
       fontWeight: 'bold',
     },
+
     userText: {
+      color: 'rgba(255, 255, 255, 0.8)',
       marginBottom: 10,
     },
   });
