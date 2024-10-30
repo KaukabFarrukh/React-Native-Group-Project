@@ -1,124 +1,85 @@
-import { TaskItem } from "@/models/TaskItem";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useState } from "react";
-import { Pressable, TouchableHighlight, View, Text, StyleSheet } from "react-native";
+import React from "react";
+import { Modal, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 
+type DeleteAllTasksProps = {
+    message: string;
+    button1Click: () => void;
+    button1Text: string;
+    button2Click: () => void;
+    button2text: string;
+};
 
-type shoppErrorProps = {
-    message : String;
-    button1Click: () => void,
-    button1Text : String,
-    button2Click: () => void,
-    button2text: String,
+export default function DeleteAllTasks({
+    message,
+    button1Click,
+    button1Text,
+    button2Click,
+    button2text
+}: DeleteAllTasksProps) {
+    return (
+        <Modal transparent={true} visible={true} animationType="fade">
+            <View style={styles.modalBackground}>
+                <View style={styles.confirmModal}>
+                    <Text style={styles.confirmText}>{message}</Text>
+                    <View style={styles.modalButtonContainer}>
+                        <TouchableOpacity style={styles.cancelButton} onPress={button1Click}>
+                            <Text style={styles.buttonText}>{button1Text}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.confirmButton} onPress={button2Click}>
+                            <Text style={styles.buttonText}>{button2text}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    );
 }
-
-export default function DeleteAllTasks({message,  button1Click, button1Text, button2Click, button2text} : shoppErrorProps){
-   /*  const [tasks, setTasks] = useState<TaskItem[]>([]);  */
-
-    /* async function deleteAll() {
-        await AsyncStorage.removeItem('tasklist')
-
-         setTasks([])
-        
-      } */
-
-      return(
-        <View style={styles.errorBackg}>
-
-        <Pressable style={styles.errorColorBack} onPress={button1Click}>
-
-        <View ></View>
-        </Pressable>
-
-        
-      <View style={styles.errorBox}>
-      <Text style={styles.errorText}>{message}</Text>
-      <TouchableHighlight onPress={button1Click}>
-        <Text style={styles.errorText}>{button1Text}</Text>
-      </TouchableHighlight>
-
-
-      {button2text != undefined &&    
-      <TouchableHighlight onPress={button2Click}>
-        <Text style={styles.errorText}>{button2text}</Text>
-      </TouchableHighlight>
-      }
-
-     </View>
-     </View>
-
-
-      )
-   
-
-}
-
 
 const styles = StyleSheet.create({
-    shopTextInput:{
-      backgroundColor:'lightgray',
-      height: 40,
-      padding:10,
-      margin:5,
-      borderRadius:5
+    modalBackground: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)"
     },
-    shopFilterTab:{
-      backgroundColor:'red',
-      height:50,
-      flex:1
+    confirmModal: {
+        width: 300,
+        padding: 20,
+        backgroundColor: "#333",
+        borderRadius: 10,
+        alignItems: "center"
     },
-    shopFilterTabActive:{
-      backgroundColor:'green',
-      height:50,
-      flex:1
+    confirmText: {
+        fontSize: 18,
+        color: "white",
+        marginBottom: 20,
+        textAlign: "center"
     },
-    titleContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
+    modalButtonContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%"
     },
-    stepContainer: {
-      gap: 8,
-      marginBottom: 8,
+    cancelButton: {
+        backgroundColor: "#555",
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        flex: 1,
+        marginRight: 10
     },
-    reactLogo: {
-      height: 178,
-      width: 290,
-      bottom: 0,
-      left: 0,
-      position: 'absolute',
+    confirmButton: {
+        backgroundColor: "red",
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        flex: 1,
+        marginLeft: 10
     },
-    errorBackg:{
-      zIndex:90,
-      position:'absolute',
-      width:'100%',
-      height:'100%',
-      alignItems:'center',
-      justifyContent:'center',
-      
-    },
-    errorColorBack:{
-      position:'absolute',
-      backgroundColor:'black',
-      opacity:0.8,
-      width:'100%',
-      height:'100%',
-    },
-    errorBox:{
-      backgroundColor:'red',
-      position:'absolute',
-      alignItems:'center',
-      justifyContent:'space-around',
-      zIndex:100,
-      width:200,
-      height:200,
-      opacity:2,
-      borderRadius:8,
-      color:'white'
-    },
-    errorText:{
-      color:'white',
-      fontSize:18
+    buttonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold",
+        textAlign: "center"
     }
-  });
-  
+});

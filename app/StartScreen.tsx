@@ -9,6 +9,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { Button, FlatList, Text, StyleSheet, TouchableOpacity, View, Modal, Pressable } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 
 export default function StartScreen({ navigation }: any) {
@@ -55,9 +56,6 @@ useEffect(() => {
     try {
       const storedTasks = await AsyncStorage.getItem("tasklist");
       const taskData = storedTasks ? JSON.parse(storedTasks) : [];
-  
-    
-  
       // Set the tasks
       setTasks(taskData);
       setAllTaskData(taskData); 
@@ -66,9 +64,6 @@ useEffect(() => {
     }
   };
   
-  
-  
-
   const deleteAll = async () => {
     await AsyncStorage.removeItem("tasklist");
     setTasks([]);
@@ -78,14 +73,11 @@ useEffect(() => {
 
   // Filter tasks based on selected status and category
   const showList = () => {
-    
-  
     if (allTaskData.length === 0) {
       console.log("No tasks to filter.");
-      return; // Do not proceed if there are no tasks
-    }
-    
-    const filtered = allTaskData.filter((task) => {
+      return; 
+    }   
+     const filtered = allTaskData.filter((task) => {
       const matchesStatus = task.status === listType;
       const matchesCategory = selectedCategory === "All Categories" || task.category === selectedCategory;
       return matchesStatus && matchesCategory;
@@ -115,13 +107,25 @@ useEffect(() => {
     setSelectedTask(null);
     setModalVisible(false);
   };
+  // Delete a specific task
+  const handleDeleteTask = async (id: string) => {
+    const updatedTasks = allTaskData.filter((task) => task.id !== id);
+    setAllTaskData(updatedTasks);
+    setTasks(updatedTasks);
+    setFilteredTasks(updatedTasks.filter((task) =>
+      (task.status === listType) && (selectedCategory === "All Categories" || task.category === selectedCategory)
+    ));
+    await AsyncStorage.setItem("tasklist", JSON.stringify(updatedTasks));
+    closeModal();
+  };
 
-  return (
-    <View style={styles.container}>
   
+  return (
+    <View style={styles.container}>  
     {/* Categories List with "All Categories" */}
     <View>
     
+    <Text style={styles.headingH2}>Your Categories</Text>
       <FlatList
         data={[{ id: "all", name: "All Categories" }, ...categories]}
         keyExtractor={(item) => item.id}
@@ -142,10 +146,12 @@ useEffect(() => {
         </TouchableOpacity>
         
         )}
-        contentContainerStyle={styles.flatListContent}
+       /*  contentContainerStyle={styles.flatListContent} */
       />
   
       {/* Status Filters */}
+      <Text style={styles.headingH2}>Filter by Status</Text>
+      <View></View>
       <View style={styles.statusFilters}>
         <TouchableOpacity
           style={listType === "To Do" ? styles.shopFilterTabActive : styles.taskFilterTab}
@@ -169,24 +175,30 @@ useEffect(() => {
     </View>
   
     {/* Filtered Tasks List */}
+    <Text style={styles.headingH2}>Your Tasks</Text>
     <FlatList
       data={filteredTasks}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <Pressable onPress={() => openModal(item)}>
-          <TaskItemComponent item={item} />
+          <TaskItemComponent item={item} onDelete={handleDeleteTask} />
         </Pressable>
       )}
-      contentContainerStyle={styles.taskList} // Optional: add padding to separate task list from buttons
+      contentContainerStyle={styles.taskList} 
     />
-  
-    <Button title="Create Task" onPress={() => navigation.navigate("AddTaskScreen")} />
-    <Button color='red' title="Delete all" onPress={() => setShowDelete(true)} />
-  
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.deleteButton} onPress={() => setShowDelete(true)}>
+          <Text style={styles.buttonText}>Delete All</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.createButton} onPress={() => navigation.navigate("AddTaskScreen")}>
+          <Text style={styles.buttonText}>Create Task</Text>
+        </TouchableOpacity>
+      </View>
+ 
     {showDelete && (
-      <DeleteAllTasks
-      
-        message="Are you sure you want to delete all?"
+      <DeleteAllTasks   
+        message="Are you sure you want to delete all tasks?"
         button1Click={() => setShowDelete(false)}
         button1Text="Cancel"
         button2Click={deleteAll}
@@ -197,21 +209,32 @@ useEffect(() => {
     {/* Modal for updating task status */}
     {selectedTask && (
       <Modal visible={isModalVisible} animationType="slide">
+        
         <View style={styles.modalContainer}>
-          <Text>Change Status for {selectedTask.title}</Text>
+          
+          <Text style={styles.modalHeading}>Change Status for {selectedTask.title}</Text>
           
           <Picker
             selectedValue={selectedTask.status}
             onValueChange={(newStatus) => switchStatus(selectedTask.id, newStatus)}
-            style={{ height: 50, width: '100%', marginBottom: 10 }}
+            style={styles.picker}
+      itemStyle={styles.pickerItem}
           >
             <Picker.Item label="To Do" value="To Do" />
             <Picker.Item label="In Progress" value="In Progress" />
             <Picker.Item label="Done" value="Done" />
           </Picker>
-  
-          <View>
-            <Button title="Close" onPress={closeModal} />
+           {/* Delete Icon in Modal */}
+           
+           <View style={styles.buttonModalContainer}> 
+            <View style={styles.modalDeleteBtn} >
+            <Button color={'white'} title="Delete Task" onPress={() => handleDeleteTask(selectedTask.id)} />
+            </View>
+
+
+          <View style={styles.modalBtn} >
+            <Button color={'white'} title="Close" onPress={closeModal} />
+          </View>
           </View>
         </View>
       </Modal>
@@ -225,98 +248,168 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#0D0D0D',
     flex: 1,
+    padding:20
   },
-  gradientBackground: {
-   
-   
+  gradientBackground: {  
     borderRadius: 10,
   },
-  flatListContent: {
-    paddingTop: 50,     // Adds padding only at the top of the FlatList content
-    paddingBottom: 20,  // Adds padding only at the bottom of the FlatList content
-    marginTop: 5,       // Adds margin only at the top of the FlatList content
-    marginBottom: 0,   // Adds margin only at the bottom of the FlatList content
+  headingH2:{
+    color:'white',
+    fontSize:24,
+    fontWeight:'bold',
+    marginTop:30
   },
+  buttonModalContainer: {
+    position:'absolute',
+    bottom:60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  deleteButton: {
+    margin:1,
+    width:'49%',
+    backgroundColor: 'red',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    borderColor:'red',
+    borderWidth: 1,
+  },
+  createButton: {
+    margin:1,
+    width:'49%',
+    backgroundColor: '#F97B34',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+ 
   statusFilters: {
+    width:'100%',
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 8,
-    color:'white'
+    color:'white',
+    borderRadius: 8,
+    marginTop:15,
+    borderWidth: 1,
+    
   },
   statusText:{
-     color:'white'
+     color:'white',
+     fontSize:16, 
   },
   taskFilterTab: {
-   /*  backgroundColor: 'rgba(255, 255, 255, 0.2)', */
-    padding: 30,
+    
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 20,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 0,
     color:'white',
-    borderRadius: 8,
-    borderWidth: 1,
+    
   },
   shopFilterTabActive: {
-  /*   backgroundColor: "#DB5400", */
-    padding: 30,
+    backgroundColor: "#DB5400",
+    padding: 20,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 0,
-   borderBottomWidth:1,
-   borderColor:'white',
-    borderRadius: 8,
-    borderWidth: 1,
     
   },
   categoryItem: {
     color:'white',
     fontWeight:'bold',
-    fontSize:20,
+    fontSize:18,
     padding: 30,
     margin: 4,
-   /*  backgroundColor: 'rgba(255, 255, 255, 0.2)', */  // Semi-transparent for glass effect
-  /*   backgroundColor: 'transparent', */ // Semi-transparent for glass effect
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
-    elevation: 5, // Adds shadow depth on Android
+    elevation: 5, 
     overflow: 'hidden', 
   },
   selectedCategory: {
-   /*  backgroundColor: "#DB5400", */
-   borderColor:'white',
     fontWeight:'bold',
-    fontSize:20,
+    fontSize:18,
     padding: 30,
-    margin: 4,
-   
+    margin: 4, 
     borderRadius: 8,
     borderWidth: 1,
-    /* borderColor: 'rgba(255, 255, 255, 0.3)', */
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
-    elevation: 5, // Adds shadow depth on Android
+    elevation: 5, 
     overflow: 'hidden', 
   },
   selectedText: {
-    color: 'white', // Change text color for selected category if needed
+    color: '#DB5400', 
   },
   taskList: {
-    paddingBottom: 20, // Adds spacing at the bottom of the task list
+    paddingBottom: 20, 
   },
-  modalContainer: {
-    flex: 1,
+  modalContainer: { 
+    flex:1,
+    zIndex:100, 
+    width:'100%',
+    height:'100%',
+    
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-    padding: 20,
+    backgroundColor: "rgba(0,0,0,0.9)",
+   /*  padding: 20, */
   },
+  modalHeading:{
+    marginTop:0,
+    fontSize:32,
+    color:'white',
+  
+
+  },
+  modalBtn:{
+    margin:1,
+    width:'49%',
+    backgroundColor: '#F97B34',
+    paddingVertical: 7,
+    paddingHorizontal: 7,
+    borderRadius: 8,
+    borderColor:'#F97B34',
+    borderWidth: 1,
+  },
+  modalDeleteBtn:{
+    margin:1,
+    width:'49%',
+    backgroundColor: 'red',
+    paddingVertical: 7,
+    paddingHorizontal: 7,
+    borderRadius: 8,
+    borderColor:'red',
+    borderWidth: 1,
+  },
+  picker: {
+    height: 50,
+    width: '100%',  
+    color: '#FFFFFF', 
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 100,
+  },
+  pickerItem: {   
+    color: '#FFFFFF', // White color for item text
+  }
 });

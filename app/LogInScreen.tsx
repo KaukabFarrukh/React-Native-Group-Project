@@ -47,7 +47,7 @@ export default function LoginScreen({ navigation }: any) {
     <View style={styles.container}>
     <View style={styles.formContainer}>
       <Text style={styles.header}>Manage your daily tasks</Text>
-      <Text style={styles.title}>Login</Text>
+     
       <BlurView intensity={100} tint="dark" style={styles.glassInput}>
       <TextInput
         style={styles.input}

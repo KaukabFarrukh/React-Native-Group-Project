@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, TextInput, View, Text, Platform } from 'react-native';
+import { Button, TextInput, View, Text, Platform, StyleSheet, Modal, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TaskItem } from '@/models/TaskItem';
@@ -15,6 +15,7 @@ export default function AddTaskScreen({ navigation }: any) {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [endTime, setEndTime] = useState(new Date());
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -62,8 +63,14 @@ export default function AddTaskScreen({ navigation }: any) {
       await AsyncStorage.setItem('tasklist', JSON.stringify(updatedTasks));
      setTitle('');
      setDescription('');
+     setShowSuccessModal(true);
 
+     setTimeout(() => {
+      setShowSuccessModal(false);
       navigation.navigate('index');
+    }, 1500);
+
+      
       
     } catch (error) {
       console.error('Failed to save task', error);
@@ -151,8 +158,8 @@ export default function AddTaskScreen({ navigation }: any) {
       <View  style={{ marginBottom: 15 }}>
 
 {/* Category Picker */}
-<Text style={{ color: 'white', marginBottom: 5 }}>
-  Select Category
+<Text style={{ color: 'white', marginBottom: 10, marginTop:15, fontSize:20 }}>
+  Custom List of Categories
 </Text>
 
 <Picker
@@ -163,17 +170,86 @@ style={{
   backgroundColor: 'rgba(255, 255, 255, 0.1)',
   borderRadius: 8,
   }}
+ 
+      itemStyle={styles.pickerItem}
 >
 
-<Picker.Item label="Select a Category" value="" />
+<Picker.Item color="white" label="Select a Category" value="" />
 {categories.map((cat) => (
 <Picker.Item key={cat.id} label={cat.name} value={cat.name} />
 ))}
 </Picker>
 </View>
-
+<View style={styles.buttonContainer}>
 <Button title="Save Task" onPress={handleSaveTask} color="#FF6347" />
-    </View>
+</View>
+
+
+{/* Success Modal */}
+<Modal
+        transparent={true}
+        visible={showSuccessModal}
+        animationType="fade"
+        onRequestClose={() => setShowSuccessModal(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.successModal}>
+            <Text style={styles.successText}>Task Added Successfully!</Text>
+            <Image
+              source={require('../assets/images/success.gif')}
+              style={styles.successGif}
+            />
+          </View>
+        </View>
+      </Modal>
+
+
+
+
+</View>
     
   );
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#0D0D0D',
+    flex: 1,
+    padding:20
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+   /*  paddingHorizontal: 20, */
+  },
+  pickerItem: {   
+    color: 'white', // White color for item text
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  successModal: {
+    width: 250,
+    padding: 20,
+    backgroundColor: '#28a745',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  successText: {
+    fontSize: 18,
+    color: 'white',
+    textAlign: 'center',
+  },
+  successGif: {
+    width: 100,
+    height: 100,
+  },
+
+});

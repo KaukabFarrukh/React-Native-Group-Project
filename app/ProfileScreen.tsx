@@ -1,23 +1,23 @@
-import AddCategory from "@/components/AddCategory";
-import DeleteAllTasks from "@/components/deleteAllTasks";
-import { CategoryItem } from "@/models/CategoryItem";
-import { TaskItem } from "@/models/TaskItem";
+import React, { useEffect, useState } from 'react';
+import { Alert, FlatList, Text, View, StyleSheet, TouchableOpacity, Modal, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { LinearGradient } from 'expo-linear-gradient';
+import AddCategory from "@/components/AddCategory";
 
-import { Alert, Button, FlatList, Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { CategoryItem } from "@/models/CategoryItem";
+import { TaskItem } from "@/models/TaskItem";
+import { router } from "expo-router";
+import DeleteAllTasks from '@/components/deleteAllTasks';
 
 export default function ProfileScreen({ navigation }: any) {
   const [categories, setCategories] = useState<CategoryItem[]>([]);
-  const isFocused = useIsFocused();
   const [showDelete, setShowDelete] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false); // New modal state
+  const isFocused = useIsFocused();
   const [userData, setUserData] = useState<{ username: string, password: string } | null>(null);
-  
-  // Set up the logout button in the header
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -28,17 +28,13 @@ export default function ProfileScreen({ navigation }: any) {
     });
   }, [navigation]);
 
-  
-  // Load categories when the screen is focused
-   useEffect(() => {
+  useEffect(() => {
     if (isFocused) {
       loadCategories();
       loadUserData();
-     
     }
-  }, [isFocused]); 
+  }, [isFocused]);
 
-  // Load user data from AsyncStorage
   const loadUserData = async () => {
     try {
       const storedUserData = await AsyncStorage.getItem('userData');
@@ -52,159 +48,288 @@ export default function ProfileScreen({ navigation }: any) {
     }
   };
 
-
-  // Handle logout without clearing user data
   const handleLogout = async () => {
     await AsyncStorage.setItem('isLoggedIn', 'false');
     Alert.alert('Logout', 'You have been logged out.');
-    router.replace('/LogInScreen'); // Redirect to LoginScreen but retain user data in AsyncStorage
+    router.replace('/LogInScreen'); 
   };
 
-  // Handle deleting the user data from AsyncStorage
-  const handleDeleteUser = async () => {
+  const confirmDeleteUser = async () => {
     try {
-      // Remove the user data from AsyncStorage
       await AsyncStorage.removeItem('userData');
       Alert.alert('Account Deleted', 'Your account has been deleted.');
-      
-      // After deleting, navigate to the SignUp screen to create a new user
-      router.navigate('/SignUpScreen');
+      setShowDeleteAccountModal(false);
+      router.replace('/SignUpScreen');
     } catch (error) {
       console.error('Error deleting account:', error);
     }
   };
 
-  
- // Function to handle adding a new category
- const handleAddCategory = async (newCategory: CategoryItem) => {
-  const updatedCategories = [...categories, newCategory];
-  setCategories(updatedCategories);
+  const handleAddCategory = async (newCategory: CategoryItem) => {
+    const updatedCategories = [...categories, newCategory];
+    setCategories(updatedCategories);
 
-  // Save updated categories to AsyncStorage
-  await AsyncStorage.setItem('categorylist', JSON.stringify(updatedCategories));
-};
+    await AsyncStorage.setItem('categorylist', JSON.stringify(updatedCategories));
+    
+    setShowSuccessModal(true);
+    setTimeout(() => {
+      setShowSuccessModal(false);
+    }, 1500);
+  };
 
-// Load categories from AsyncStorage
-const loadCategories = async () => {
-  try {
-    const storedCategories = await AsyncStorage.getItem('categorylist');
-    if (storedCategories !== null) {
-      setCategories(JSON.parse(storedCategories));
+  const loadCategories = async () => {
+    try {
+      const storedCategories = await AsyncStorage.getItem('categorylist');
+      if (storedCategories !== null) {
+        setCategories(JSON.parse(storedCategories));
+      }
+    } catch (error) {
+      console.error("Failed to load categories", error);
     }
-  } catch (error) {
-    console.error("Failed to load categories", error);
-  }
-};
+  };
 
-async function deleteAllCategories(){
-  await AsyncStorage.removeItem('categorylist');
-  setCategories([]);
+  async function deleteAllCategories() {
+    await AsyncStorage.removeItem('categorylist');
+    setCategories([]);
 
-  // Update tasks to remove the deleted categories
-  try {
-    const storedTasks = await AsyncStorage.getItem('tasklist');
-    if (storedTasks) {
-      const taskList = JSON.parse(storedTasks);
-
-      // Set tasks' category to "Uncategorized" or remove the category field
-      const updatedTasks = taskList.map((task: TaskItem) => {
-        if (task.category && !categories.some(cat => cat.name === task.category)) {
-          task.category = "Uncategorized"; // Or set to "" if you prefer
-        }
-        return task;
-      });
-
-      await AsyncStorage.setItem('tasklist', JSON.stringify(updatedTasks));
+    try {
+      const storedTasks = await AsyncStorage.getItem('tasklist');
+      if (storedTasks) {
+        const taskList = JSON.parse(storedTasks);
+        const updatedTasks = taskList.map((task: TaskItem) => {
+          if (task.category && !categories.some(cat => cat.name === task.category)) {
+            task.category = "Uncategorized";
+          }
+          return task;
+        });
+        await AsyncStorage.setItem('tasklist', JSON.stringify(updatedTasks));
+      }
+    } catch (error) {
+      console.error("Failed to update tasks after deleting categories", error);
     }
-  } catch (error) {
-    console.error("Failed to update tasks after deleting categories", error);
+    setShowDelete(false);
   }
-}
 
-    return (
-      <View style= {styles.container}>
-        {userData && (
+  return (
+    <View style={styles.container}>
+      {userData && (
         <View style={styles.userInfo}>
-          <Text style={styles.userLabel}>Hi {userData.username} !</Text>
-          {/* <Text style={styles.userText}>{userData.username}</Text>
-          <Text style={styles.userLabel}>Password:</Text>
-          <Text style={styles.userText}>{userData.password}</Text> */}
+          <Text style={styles.userLabel}>Welcome, {userData.username}!</Text>
         </View>
       )}
-        <View style= {styles.addCategoryContainer}>
-          <AddCategory onAddCategory={handleAddCategory}></AddCategory>
-           
-           {/* Display the list of categories */}
-        <FlatList
-          data={categories}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <Text style= {styles.categoryText}>{item.name}</Text>}
-        />
+      
+      <Text style={styles.subHeading}>Add New Category</Text>
+      <View style={styles.addCategoryContainer}>
+        <AddCategory onAddCategory={handleAddCategory} />
+      </View>
+
+      <Text style={styles.subHeading}>Your Categories</Text>
+      <FlatList
+        data={categories}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.categoryItem}>
+            <Text style={styles.categoryText}>{item.name}</Text>
           </View>
+        )}
+        contentContainerStyle={styles.categoryList}
+      />
 
-          <Button title="Delete All Categories" onPress={() => {setShowDelete(true)}} color="#FF6347"></Button>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.deleteButton} onPress={() => setShowDelete(true)}>
+          <Text style={styles.buttonText}>Delete All </Text>
+        </TouchableOpacity>
 
-          {showDelete  && 
- <DeleteAllTasks message={'Are you sure you want to delete all categories?'}
- button1Click={() => {
-   setShowDelete(false)
- }}
- button1Text={'Avbrut'}
- button2Click={() =>{deleteAllCategories()}}
- button2text={'Confirm'}
- />
- }
+        <TouchableOpacity style={styles.accountButton} onPress={() => setShowDeleteAccountModal(true)}>
+          <Text style={styles.buttonText}>Delete Account</Text>
+        </TouchableOpacity>
+      </View>
 
+      {showDelete && (
+        <DeleteAllTasks
+          message="Are you sure you want to delete all categories?"
+          button1Click={() => setShowDelete(false)}
+          button1Text="Cancel"
+          button2Click={deleteAllCategories}
+          button2text="Confirm"
+        />
+      )}
 
+      {/* Success Modal */}
+      <Modal
+        transparent={true}
+        visible={showSuccessModal}
+        animationType="fade"
+        onRequestClose={() => setShowSuccessModal(false)}
+      >
+        
+        <View style={styles.modalBackground}>
+          <View style={styles.successModal}>
+            <Text style={styles.successText}>
+              Category Added Successfully!</Text>
+              <Image
+              source={require('../assets/images/success.gif')}
+              style={styles.successGif}
+            />
+            
+            
+          </View>
+        </View>
+      </Modal>
 
-     {/* Logout button */}
-   {/*   <Button title="Logout" onPress={handleLogout} /> */}
+      {/* Delete Account Confirmation Modal */}
+      <Modal
+        transparent={true}
+        visible={showDeleteAccountModal}
+        animationType="fade"
+        onRequestClose={() => setShowDeleteAccountModal(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.confirmModal}>
+            <Text style={styles.confirmText}>Are you sure you want to delete your account?</Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity style={styles.cancelButton} onPress={() => setShowDeleteAccountModal(false)}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.confirmButton} onPress={confirmDeleteUser}>
+                <Text style={styles.buttonText}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
 
-{/* Delete User button */}
-<Button title="Delete Account" color="red" onPress={handleDeleteUser} />
-</View>
-    );
-  }
-  
-
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#0D0D0D',
-      padding: 20,
-    },
-
-    addCategoryContainer: {
-      marginBottom: 20,
-     /*  backgroundColor:'white' */
-    },
-
-    headerButton: {
-      marginRight: 15,
-    },
-
-    categoryText: {
-      color: 'white',
-      fontSize: 16,
-      paddingVertical: 5,
-    },
-
-    userInfo: {
-      marginVertical: 20,
-      padding: 10,
-     /*  backgroundColor: '#1C1C1C', */
-      borderRadius: 5,
-    },
-
-    userLabel: {
-      color: '#FFFFFF',
-      fontWeight: 'bold',
-      fontSize:34
-    },
-
-    userText: {
-      color: 'rgba(255, 255, 255, 0.8)',
-      marginBottom: 10,
-    },
-  });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0D0D0D',
+    padding: 20,
+  },
+  successGif: {
+    width: 100,
+    height: 100,
+  },
+  headerButton:{
+    marginRight:0
+  },
+  userInfo: {
+    marginVertical: 20,
+    padding: 10,
+    borderRadius: 5,
+  },
+  userLabel: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 30,
+  },
+  subHeading: {
+    color: '#FF6347',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  addCategoryContainer: {
+    marginBottom: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+  },
+  categoryList: {
+    paddingVertical: 10,
+  },
+  categoryItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    backgroundColor: '#1E1E1E',
+    borderRadius: 8,
+    marginVertical: 5,
+  },
+  categoryText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  deleteButton: {
+    backgroundColor: '#FF6347',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    flex: 1,
+    marginRight: 10,
+  },
+  accountButton: {
+    backgroundColor: 'red',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    flex: 1,
+    marginLeft: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  successModal: {
+    width: 250,
+    padding: 20,
+    backgroundColor: '#28a745',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  successText: {
+    fontSize: 18,
+    color: 'white',
+    textAlign: 'center',
+  },
+  confirmModal: {
+    width: 300,
+    padding: 20,
+    backgroundColor: '#333',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  confirmText: {
+    fontSize: 18,
+    color: 'white',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  cancelButton: {
+    backgroundColor: '#555',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    flex: 1,
+    marginRight: 10,
+  },
+  confirmButton: {
+    backgroundColor: 'red',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    flex: 1,
+    marginLeft: 10,
+  },
+});
